@@ -1,0 +1,13 @@
+# Logs of gomobile and the NDK toolchain. Large, and reproducible from the tag.
+.build/
+*.aar
+
+# artifacts/ is committed-empty on purpose: the built AAR is a release asset,
+# not source. It must never be committed — a stale .aar in the tree is exactly
+# how the app ends up shipping last week's core.
+artifacts/*
+!artifacts/.gitkeep
+
+# Local verification leftovers
+/tmp-aar/
+*.log

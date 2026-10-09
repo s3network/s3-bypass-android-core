@@ -1,0 +1,66 @@
+name: Build AAR
+
+# Produces libxray.aar — our Android core — from a pinned tag of the fork, and
+# proves the result contains that core before calling the job green.
+#
+# The verification step is the point of this workflow. A gomobile bind against
+# the wrong checkout succeeds, installs, and then routes nothing, with nothing
+# in the device logs to explain it. Building the AAR is cheap; finding out that
+# it holds the wrong code is not, so the check runs on every build rather than
+# when someone remembers.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  aar:
+    name: libxray.aar
+    runs-on: ubuntu-latest
+    env:
+      # Bumping this is a deliberate act: it decides what every Android build
+      # ships, and the server side has to be on a compatible core.
+      CORE_TAG: v0.1.0-fork.3
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/setup-go@v6
+        with:
+          go-version: '1.27'
+          check-latest: true
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - name: Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Install NDK and gomobile
+        run: |
+          # r27 or newer: older NDKs do not emit the 16KB-aligned segments that
+          # Android 15 requires, which shows up as an install-and-crash.
+          sdkmanager --install "ndk;27.2.12479018" "platform-tools"
+          echo "ANDROID_NDK_HOME=$ANDROID_SDK_ROOT/ndk/27.2.12479018" >> "$GITHUB_ENV"
+          go install golang.org/x/mobile/cmd/gomobile@latest
+          gomobile init
+          echo "$(go env GOPATH)/bin" >> "$GITHUB_PATH"
+
+      - name: Unit tests
+        # These start a real core instance, so they catch a binding that no
+        # longer wires up the config surface before an AAR is ever produced.
+        run: go test ./... -count=1
+
+      - name: Build AAR
+        run: scripts/build-aar.sh
+
+      - name: Upload
+        uses: actions/upload-artifact@v4
+        with:
+          name: libxray-aar-${{ github.sha }}
+          path: artifacts/libxray.aar
+          if-no-files-found: error
