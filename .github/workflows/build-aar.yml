@@ -57,6 +57,9 @@ jobs:
           gomobile init
           echo "$(go env GOPATH)/bin" >> "$GITHUB_PATH"
 
+      - name: Fetch the core
+        run: scripts/fetch-core.sh
+
       - name: Unit tests
         # These start a real core instance, so they catch a binding that no
         # longer wires up the config surface before an AAR is ever produced.
