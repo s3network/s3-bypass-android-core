@@ -39,9 +39,16 @@ jobs:
 
       - name: Android SDK
         uses: android-actions/setup-android@v3
+        with:
+          # The action defaults to installing the legacy "tools" package, which
+          # the SDK repository no longer carries — the run dies at 10% with
+          # "Failed to find package 'tools'". cmdline-tools replaced it and is
+          # where sdkmanager lives now.
+          packages: 'cmdline-tools;latest'
 
       - name: Install NDK and gomobile
         run: |
+          yes | sdkmanager --licenses > /dev/null || true
           # r27 or newer: older NDKs do not emit the 16KB-aligned segments that
           # Android 15 requires, which shows up as an install-and-crash.
           sdkmanager --install "ndk;27.2.12479018" "platform-tools"
