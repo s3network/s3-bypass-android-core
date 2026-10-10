@@ -81,6 +81,6 @@ require (
 //
 // scripts/build-aar.sh rewrites this to an absolute path and checks out the
 // pinned tag first, so a build never silently picks up a moving branch.
-replace github.com/xtls/xray-core => /Users/vladimir/s3-bypass-android/.build/s3-bypass-protocol
+replace github.com/xtls/xray-core => ../s3-bypass-protocol
 
 tool golang.org/x/mobile/cmd/gobind

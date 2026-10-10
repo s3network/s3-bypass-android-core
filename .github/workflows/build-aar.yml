@@ -64,6 +64,17 @@ jobs:
       - name: Fetch the core
         run: scripts/fetch-core.sh
 
+      - name: go.mod must stay portable
+        run: |
+          # fetch-core.sh rewrites the replace to an absolute path so a local
+          # build can find its checkout. That rewrite is not meant to reach a
+          # commit — it has happened once, and the symptom is a repository that
+          # only builds on the machine that made it.
+          if grep -nE '(/Users/|/home/|[A-Za-z]:\\)' go.mod; then
+            echo "::error::go.mod contains an absolute path — commit the relative ../s3-bypass-protocol form"
+            exit 1
+          fi
+
       - name: Unit tests
         # These start a real core instance, so they catch a binding that no
         # longer wires up the config surface before an AAR is ever produced.
