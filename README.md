@@ -100,6 +100,24 @@ stop. They are not mocks, because the failure this binding is most likely to
 have is a config surface that no longer resolves, and that shows up when the
 core actually starts.
 
+## License
+
+MPL-2.0, the same license as the core this binds.
+
+The choice is not arbitrary. gomobile links statically, so `libgojni.so`
+contains this binding *and* the whole core tree. One license across both
+means a recipient has one set of rules to read, and MPL-2.0 is
+file-level copyleft: ship the AAR unmodified and there is nothing to
+publish; modify the binding and only those files have to stay open.
+
+It is also permissive enough to be linked from either a GPL-3.0 or an
+Apache-2.0 application, so downstream is not forced into one lineage.
+
+Note that the bundled core is MPL-2.0 by its own accord and must stay so
+regardless of what this repository chooses — that is why
+[s3-bypass-protocol](https://github.com/thevladimirzh/s3-bypass-protocol)
+is public.
+
 ## Versioning
 
 `CORE_TAG` in the workflow decides what every build ships. Bump it
