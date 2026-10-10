@@ -54,6 +54,24 @@ The result lands at `artifacts/libxray.aar`. Copy it into the app as
 exported surface match what the app already resolves, so no Kotlin changes are
 needed to try it.
 
+## Differences from the AAR the app shipped with
+
+Worth knowing before dropping this in:
+
+- **Four ABIs, not one.** `armeabi-v7a`, `arm64-v8a`, `x86`, `x86_64`. The old
+  artifact was arm64-only, so it never ran on an x86 emulator. Good for
+  testing, too heavy for shipping — build a release AAR with just the ABIs
+  real devices need before distributing.
+- **No geodata.** The old AAR shipped `geoip.dat` and `geosite.dat` in its
+  assets. This one does not, which is fine as long as profiles avoid
+  `geoip:`/`geosite:` rules — our generated client configs do. A profile that
+  references them fails at load with a missing-asset error rather than
+  degrading quietly.
+- **No `ProcessFinder`.** Nothing in the app referenced it; the surface here is
+  the five functions the app actually calls.
+- **Bigger.** ~105 MB for four ABIs against 19 MB for the old arm64-only
+  artifact. A single ABI and `-ldflags=-s -w` bring most of that back.
+
 ## Verifying
 
 ```bash
