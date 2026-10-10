@@ -61,19 +61,23 @@ jobs:
           gomobile init
           echo "$(go env GOPATH)/bin" >> "$GITHUB_PATH"
 
-      - name: Fetch the core
-        run: scripts/fetch-core.sh
-
       - name: go.mod must stay portable
         run: |
-          # fetch-core.sh rewrites the replace to an absolute path so a local
-          # build can find its checkout. That rewrite is not meant to reach a
-          # commit — it has happened once, and the symptom is a repository that
-          # only builds on the machine that made it.
+          # Runs before fetch-core.sh on purpose: that script rewrites the
+          # replace to an absolute path so a local build can find its
+          # checkout, so checking afterwards would only ever see its own
+          # output. What matters is what was committed.
+          #
+          # This has leaked twice — a repository that only builds on the
+          # machine that made it, and a build that breaks the moment the
+          # directory moves.
           if grep -nE '(/Users/|/home/|[A-Za-z]:\\)' go.mod; then
             echo "::error::go.mod contains an absolute path — commit the relative ../s3-bypass-protocol form"
             exit 1
           fi
+
+      - name: Fetch the core
+        run: scripts/fetch-core.sh
 
       - name: Unit tests
         # These start a real core instance, so they catch a binding that no
