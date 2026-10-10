@@ -102,9 +102,15 @@ func NewCoreController(callback CoreCallbackHandler) *CoreController {
 // than through the config because the interface belongs to the app; see
 // setTunFd.
 //
+// The descriptor is int32, not int, and that is not cosmetic. gobind maps Go
+// int to Java long, and the app resolves this method by reflection with
+// Integer.class — getMethod("startLoop", String.class, int.class) does not
+// match a long parameter, so an int here turns into a NoSuchMethodException at
+// the moment the user presses connect. int32 is what gobind maps to Java int.
+//
 // StartLoop is non-blocking: Xray runs its handlers on their own goroutines,
 // so this returns while the instance is live.
-func (c *CoreController) StartLoop(configContent string, tunFd int) error {
+func (c *CoreController) StartLoop(configContent string, tunFd int32) error {
 	c.mu.Lock()
 	defer c.mu.Unlock()
 
@@ -112,7 +118,7 @@ func (c *CoreController) StartLoop(configContent string, tunFd int) error {
 		return errors.New("core is already running")
 	}
 
-	if err := setTunFd(tunFd); err != nil {
+	if err := setTunFd(int(tunFd)); err != nil {
 		return err
 	}
 
