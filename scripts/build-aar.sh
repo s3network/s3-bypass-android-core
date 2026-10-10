@@ -35,6 +35,15 @@ mkdir -p "$OUT"
 # Idempotent, so this reuses whatever fetch-core.sh already put in place.
 "$ROOT/scripts/fetch-core.sh" "$@"
 
+# gomobile bind refuses to run unless golang.org/x/mobile is in the module
+# graph ("missing golang.org/x/mobile dependency"). The tool directive is what
+# keeps it there across `go mod tidy`, and it is committed — this only fires on
+# a module that somehow lost it.
+if ! grep -q "golang.org/x/mobile/cmd/gobind" "$ROOT/go.mod"; then
+	go get -tool golang.org/x/mobile/cmd/gobind
+	go mod tidy
+fi
+
 # --- bind ---------------------------------------------------------------------
 #
 # gomobile names the artifact after the bound package (libv2ray.aar). It is
