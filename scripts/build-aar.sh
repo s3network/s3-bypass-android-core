@@ -15,9 +15,21 @@ set -euo pipefail
 
 ANDROID_API="${ANDROID_API:-21}"
 
-# Xray's own Android builds pass this: Android 15 rejects a library whose
-# segments are not 16KB aligned, and the app would install but crash on launch.
-PAGE_SIZE_LDFLAG="-ldflags=-extldflags=-Wl,-z,max-page-size=16384"
+# Two linker flags, passed as one -ldflags value because gomobile forwards it
+# to `go build` verbatim (cmd/gomobile/build.go appends "-ldflags" and the value
+# as separate arguments, and go splits the value on spaces).
+#
+# -extldflags: Xray's own Android builds pass this. Android 15 rejects a
+# library whose segments are not 16KB aligned, and the app would install but
+# crash on launch.
+#
+# -checklinkname=0: github.com/wlynxg/anet reaches into net.zoneCache with
+# //go:linkname (interface_android.go:164). Go 1.23 stopped permitting that and
+# the link fails with "invalid reference to net.zoneCache". anet arrives via
+# pion/stun, which infra/conf pulls in unconditionally through the finalmask
+# realm transport, so it cannot be left out of an Android build — and we do not
+# use that transport. Turning the check off is the documented escape hatch.
+LDFLAGS="-ldflags=-extldflags=-Wl,-z,max-page-size=16384 -checklinkname=0"
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 OUT="${OUT:-$ROOT/artifacts}"
@@ -54,7 +66,7 @@ rm -f "$OUT"/*.aar
 gomobile bind \
 	-target android \
 	-androidapi "$ANDROID_API" \
-	"$PAGE_SIZE_LDFLAG" \
+	"$LDFLAGS" \
 	-o "$OUT/libxray.aar" \
 	./binding
 
