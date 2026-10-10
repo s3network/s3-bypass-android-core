@@ -1,8 +1,11 @@
-# s3-bypass-android
+# s3-bypass-android-core
 
 The Android core for s3-bypass: a gomobile binding over our fork of
 [xray-core](https://github.com/thevladimirzh/s3-bypass-protocol), packaged as
 `libxray.aar`.
+
+This repository is the core. The application that consumes the AAR lives in
+[`s3-bypass-android`](https://github.com/thevladimirzh/s3-bypass-android).
 
 ## Why this repository exists
 

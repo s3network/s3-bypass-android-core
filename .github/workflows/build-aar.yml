@@ -8,6 +8,10 @@ name: Build AAR
 # in the device logs to explain it. Building the AAR is cheap; finding out that
 # it holds the wrong code is not, so the check runs on every build rather than
 # when someone remembers.
+#
+# The app that consumes this artifact is s3-bypass-android; artifacts are named
+# after this repository so a downloaded AAR is never ambiguous about which
+# build it came from.
 
 on:
   push:
