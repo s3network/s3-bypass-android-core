@@ -1,4 +1,4 @@
-module github.com/thevladimirzh/s3-bypass-android-core
+module github.com/s3network/s3-bypass-android-core
 
 go 1.27
 
