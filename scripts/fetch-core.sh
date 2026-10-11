@@ -16,7 +16,7 @@
 #
 set -euo pipefail
 
-CORE_REPO="${CORE_REPO:-https://github.com/thevladimirzh/s3-bypass-protocol.git}"
+CORE_REPO="${CORE_REPO:-https://github.com/s3network/s3-bypass-protocol.git}"
 CORE_TAG="${CORE_TAG:-v0.1.0-fork.3}"
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
