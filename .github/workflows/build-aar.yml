@@ -26,7 +26,13 @@ jobs:
     env:
       # Bumping this is a deliberate act: it decides what every Android build
       # ships, and the server side has to be on a compatible core.
-      CORE_TAG: v0.1.0-fork.3
+      #
+      # fork.4 carries the twelve audit fixes, including the one this fork
+      # exists for: the writer dropping a file after uploadAttempts, which
+      # wedged the peer's in-order read for 15-29s. Verified live — 20 minutes
+      # under load with no stalls, and a deliberately silenced backend
+      # recovered in 1.7s.
+      CORE_TAG: v0.1.0-fork.4
 
     steps:
       - uses: actions/checkout@v6
