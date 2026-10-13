@@ -4,7 +4,7 @@
 # fork of xray-core.
 #
 #   scripts/build-aar.sh                      # pinned tag, artifacts/libxray.aar
-#   CORE_TAG=v0.1.0-fork.4 scripts/build-aar.sh
+#   CORE_TAG=v0.1.0-fork.5 scripts/build-aar.sh
 #   scripts/build-aar.sh --core-path ../s3-bypass-protocol   # local checkout
 #
 # The core is checked out by *tag*, never by a branch. An AAR built from a
