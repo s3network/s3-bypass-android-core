@@ -27,12 +27,14 @@ jobs:
       # Bumping this is a deliberate act: it decides what every Android build
       # ships, and the server side has to be on a compatible core.
       #
-      # fork.4 carries the twelve audit fixes, including the one this fork
-      # exists for: the writer dropping a file after uploadAttempts, which
-      # wedged the peer's in-order read for 15-29s. Verified live — 20 minutes
-      # under load with no stalls, and a deliberately silenced backend
-      # recovered in 1.7s.
-      CORE_TAG: v0.1.0-fork.4
+      # fork.5 carries the twelve audit fixes from fork.4, including the one
+      # this fork exists for: the writer dropping a file after uploadAttempts,
+      # which wedged the peer's in-order read for 15-29s. Verified live —
+      # 20 minutes under load with no stalls, and a deliberately silenced
+      # backend recovered in 1.7s. On top of that it raises write concurrency
+      # to 32 and both S3 pools to 192, measured on the live VPS: download
+      # 7.8-9.9 -> 9.8 MB/s, single PUT 4.74 -> 8.30 MB/s, no S3 errors.
+      CORE_TAG: v0.1.0-fork.5
 
     steps:
       - uses: actions/checkout@v6
