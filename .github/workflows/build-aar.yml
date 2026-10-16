@@ -27,14 +27,19 @@ jobs:
       # Bumping this is a deliberate act: it decides what every Android build
       # ships, and the server side has to be on a compatible core.
       #
-      # fork.5 carries the twelve audit fixes from fork.4, including the one
-      # this fork exists for: the writer dropping a file after uploadAttempts,
-      # which wedged the peer's in-order read for 15-29s. Verified live —
-      # 20 minutes under load with no stalls, and a deliberately silenced
-      # backend recovered in 1.7s. On top of that it raises write concurrency
-      # to 32 and both S3 pools to 192, measured on the live VPS: download
-      # 7.8-9.9 -> 9.8 MB/s, single PUT 4.74 -> 8.30 MB/s, no S3 errors.
-      CORE_TAG: v0.1.0-fork.5
+      # fork.6 is the audit release on top of fork.5. It carries the twelve
+      # audit fixes from fork.4 that this fork exists for — the writer
+      # dropping a file after uploadAttempts, which wedged the peer's in-order
+      # read for 15-29s — and on top of those it bounds the buffers that
+      # decoded an object without a limit, caps per-connection buffering,
+      # puts timeouts on the S3 calls that run on the session-discovery loop,
+      # and stops reporting a delete as successful when individual keys
+      # failed.
+      #
+      # The wire format is unchanged: proxy/fedarisha/transport/protocol.go is
+      # byte-identical to fork.5. So this ships alongside a server still on
+      # fork.5, and is required once the server is on fork.6.
+      CORE_TAG: v0.1.0-fork.6
 
     steps:
       - uses: actions/checkout@v6

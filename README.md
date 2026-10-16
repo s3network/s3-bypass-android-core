@@ -45,7 +45,7 @@ Needs the Android SDK/NDK (NDK r27+ for 16 KB-aligned segments), and a JDK.
 Useful overrides:
 
 ```bash
-CORE_TAG=v0.1.0-fork.3 scripts/build-aar.sh          # pin another tag
+CORE_TAG=v0.1.0-fork.6 scripts/build-aar.sh          # pin another tag
 scripts/build-aar.sh --core-path ../s3-bypass-protocol  # use a local checkout
 ```
 
